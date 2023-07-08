@@ -30,26 +30,57 @@ function setGame() {
             let num = board[r][c];
             updateTile(tile, num);
             document.getElementById("board").append(tile);
-
         }
     }
-
     setTwo();
-    
+    setTwo();
 }
 
+function updateTile(tile, num) {
+    tile.innerText = "";
+    /* 
+     * clears the classList because we dont want tiles to have multiple classes, 
+     * like "tile x2 and x4 and x8, so we need to clear each tiles class"
+    */
+    tile.classList.value = ""; 
+    tile.classList.add("tile");
 
-
-function hasEmptyTile() {
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < columns; c++) {
-            if (board[r][c] == 0) {
-                return true;
-            }
+    if (num > 0) {
+        // This sets the inner text to whatever number is in the tile
+        tile.innerText = num; 
+        if (num <= 4096) {
+            tile.classList.add("x"+num.toString());
+        }
+        else {
+            tile.classList.add("x8192");
         }
     }
-    return false;
 }
+
+// Key up menas after you let go of a key, it goes up, so when i press a button and it goes up 
+// We use keyup becasue we want the user to press one at a time, if we use key down, 
+//then the user can just spam and we dont want that
+document.addEventListener('keyup', (e) => {
+    if (e.code == "ArrowLeft") {
+        slideLeft();
+        setTwo();
+    }
+    else if (e.code == "ArrowRight") {
+        slideRight();
+        setTwo();
+    }
+    else if (e.code == "ArrowUp") {
+        slideUp();
+        setTwo();
+
+    }
+    else if (e.code == "ArrowDown") {
+        slideDown();
+        setTwo();
+    }
+    document.getElementById("score").innerText = score;
+})
+
 
 function setTwo() {
 
@@ -67,92 +98,37 @@ function setTwo() {
 
         if (board[r][c] == 0) {
             board[r][c] = 2;
-            let tile= documnet.getElementById(r.toString() + "-" + c.toString);
+            let tile= document.getElementById(r.toString() + "-" + c.toString());
             tile.innerText = "2";
             tile.classList.add("x2");
             found = true;
         }
-
-    }
-
-}
-
-
-
-function updateTile(tile, num) {
-    tile.innerText = "";
-    /* 
-     * clears teh classList because we dont want tiles to have multiple classes, 
-     * like "tile x2 and x4 and x8, so we need to clear each tiles class"
-    */
-    tile.classList.value = ""; 
-    tile.classList.add("tile");
-
-    if (num > 0) {
-        // This sets the inner text to whatever number is in the tile
-        tile.innerText = num; 
-        if (num <= 4096) {
-            tile.classList.add("x"+num.toString());
-        }
-        else {
-            tile.classList.add("x8192");
-        }
     }
 }
-// Key up menas after you let go of a key, it goes up, so when i press a button and it goes up 
-// We use keyup becasue we want the user to press one at a time, if we use key down, 
-//then the user can just spam and we dont want that
-document.addEventListener("keyup", (e) => {
-    if (e.code =="ArrowLeft") {
-        slideLeft();
-        setTwo();
-    }
-    else if (e.code =="ArrowRight") {
-        slideRight();
-        setTwo();
-    }
-    else if (e.code =="ArrowUp") {
-        slideUp();
-        setTwo();
-    }
-    else if (e.code =="ArrowDown") {
-        slideDown();
-        setTwo();
-    }
 
-    documnet.getElementById("score").innerText = score;
-    
-})
+
+
 
 function filterZero(row) {
     return row.filter(num => num != 0); // This creates a new array without zeroes(does this by using filter) 
-
 }
 
 function slide(row) {
-    //[0,2,2,2]
-    row = filterZero(row);
-
-    //slide
-    for (let i = 0; i < row.length; i++) {
-        //check every 2
-        if (row[i] == row[i + 1]){
+    //[0, 2, 2, 2] 
+    row = filterZero(row); //[2, 2, 2]
+    for (let i = 0; i < row.length-1; i++){
+        if (row[i] == row[i+1]) {
             row[i] *= 2;
             row[i+1] = 0;
             score += row[i];
-        } // [2, 2, 2] -> [4, 0,2]
-    }
-
-    row = filterZero(row); // [4, 2]
-
-    // add zeroes
+        }
+    } //[4, 0, 2]
+    row = filterZero(row); //[4, 2]
+    //add zeroes
     while (row.length < columns) {
         row.push(0);
-    }
-
+    } //[4, 2, 0, 0]
     return row;
-
-
 }
 
 function slideLeft() {
@@ -226,5 +202,13 @@ function slideDown() {
     }
 }
 
-
- 
+function hasEmptyTile() {
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < columns; c++) {
+            if (board[r][c] == 0) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
